@@ -1,15 +1,18 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import { Grid, Row } from "react-flexbox-grid";
+import { Grid, Row, Col } from "react-flexbox-grid";
 import { AppBar } from "components/common";
+import { Link } from "react-router-dom";
 import SingleCardItem from "components/core/SingleCardItem";
 import { useGlobalContext } from "context/GlobalContext";
+import { useCartContext } from "context/CartContext";
 import { fetchBackend } from "helpers";
 
 const Products = () => {
   const [currentData, setData] = useState([]);
   const gContext = useGlobalContext();
+  const gCartContext = useCartContext();
 
   useEffect(() => {
     const getInitialProducts = async () => {
@@ -27,16 +30,18 @@ const Products = () => {
     getInitialProducts();
   }, []);
 
-  const renderCard = ({ SKU, IMAGE, NAME, PRICE, DESCRIPTION }, index) => {
+  const renderCard = (item, index) => {
     return (
       <SingleCardItem
-        key={SKU}
-        id={SKU}
+        key={item.SKU}
+        id={item.SKU}
         index={index}
-        image={IMAGE}
-        title={NAME}
-        description={DESCRIPTION}
-        price={PRICE}
+        image={item.IMAGE}
+        title={item.NAME}
+        description={item.DESCRIPTION}
+        price={item.PRICE}
+        addCart={() => gCartContext.addProduct(item)}
+        removeCart={() => gCartContext.removeProduct(item)}
       />
     );
   };
@@ -45,6 +50,24 @@ const Products = () => {
     <>
       <AppBar />
       <Grid fluid>
+        <Row center="xs">
+          <Col md={12}>
+            <Link to="/carrito">
+              <img
+                src="https://images.vexels.com/media/users/3/200060/isolated/preview/e39eb7217c7b5157d2c9154564d76598-icono-de-carrito-de-compras-rosa-by-vexels.png"
+                alt="cart"
+                style={{
+                  width: "148px",
+                  margin: "1em auto",
+                  border: "1px solid gray",
+                }}
+              />
+            </Link>
+          </Col>
+          <p>
+            Tienes {gCartContext.products.length}&nbsp; productos en el carrito
+          </p>
+        </Row>
         <Row>{currentData.map((item, i) => renderCard(item, i))}</Row>
       </Grid>
     </>

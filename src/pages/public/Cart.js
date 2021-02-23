@@ -1,42 +1,25 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
 import { Grid, Row } from "react-flexbox-grid";
 import { AppBar } from "components/common";
 import SingleCardItem from "components/core/SingleCardItem";
-import { useGlobalContext } from "context/GlobalContext";
-import { fetchBackend } from "helpers";
+import { useCartContext } from "context/CartContext";
 
 const Cart = () => {
-  const [currentData, setData] = useState([]);
-  const gContext = useGlobalContext();
+  const gCartContext = useCartContext();
 
-  useEffect(() => {
-    const getInitialProducts = async () => {
-      const { error, response } = await fetchBackend({
-        url: "productos/reloj/1",
-      });
-
-      if (!error) {
-        setData(response.data?.products || []);
-      } else {
-        gContext.toggleAlert("Hubo un error al obtener los productos");
-      }
-    };
-
-    getInitialProducts();
-  }, []);
-
-  const renderCard = ({ SKU, IMAGE, NAME, PRICE, DESCRIPTION }, index) => {
+  const renderCard = (item, index) => {
     return (
       <SingleCardItem
-        key={SKU}
-        id={SKU}
+        key={item.SKU}
+        id={item.SKU}
         index={index}
-        image={IMAGE}
-        title={NAME}
-        description={DESCRIPTION}
-        price={PRICE}
+        image={item.IMAGE}
+        title={item.NAME}
+        description={item.DESCRIPTION}
+        price={item.PRICE}
+        addCart={() => gCartContext.addProduct(item)}
+        removeCart={() => gCartContext.removeProduct(item)}
       />
     );
   };
@@ -45,7 +28,7 @@ const Cart = () => {
     <>
       <AppBar />
       <Grid fluid>
-        <Row>{currentData.map((item, i) => renderCard(item, i))}</Row>
+        <Row>{gCartContext.products.map((item, i) => renderCard(item, i))}</Row>
       </Grid>
     </>
   );

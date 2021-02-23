@@ -10,8 +10,8 @@ const CartProvider = ({ children }) => {
 
   const incProdQty = (productId) => {
     const newProds = products.map((pr) => {
-      if (pr.id === productId) {
-        return { ...pr, qty: pr.qty + 1 };
+      if (pr.ID === productId) {
+        return { ...pr, qty: (pr?.qty || 0) + 1 };
       } else {
         return pr;
       }
@@ -22,8 +22,8 @@ const CartProvider = ({ children }) => {
 
   const decProdQty = (productId) => {
     const newProds = products.map((pr) => {
-      if (pr.id === productId && pr.qty > 0) {
-        return { ...pr, qty: pr.qty - 1 };
+      if (pr.ID === productId && pr.qty > 0) {
+        return { ...pr, qty: (pr?.qty || 0) - 1 };
       } else {
         return pr;
       }
@@ -32,15 +32,19 @@ const CartProvider = ({ children }) => {
     setProducts([...newProds]);
   };
 
+  const addProduct = (productId) => {
+    setProducts([...products, productId]);
+  };
+
   const removeProduct = (productId) => {
-    setProducts([...products.filter(({ id }) => id !== productId)]);
+    setProducts([...products.filter(({ ID }) => ID !== productId.ID)]);
   };
 
   return (
     <CartContext.Provider
       value={{
         products,
-
+        addProduct,
         removeProduct,
         incProdQty,
         decProdQty,
